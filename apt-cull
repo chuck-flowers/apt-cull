@@ -1,0 +1,46 @@
+#!/bin/env sh
+
+if test -z "$(which dpkg-query)"; then
+		echo "aptimal requires that dpkg-query is installed";
+		exit 1;
+fi
+
+if test -z "$(which apt-cache)"; then
+		echo "aptimal requires that apt-cache is installed";
+		exit 1;
+fi
+
+# Constants
+TOTAL_PROGRESS_BARS=50;
+PROGRESS_BAR_WIDTH=$((TOTAL_PROGRESS_BARS + 8));
+
+# Determine the list and count of installed packages
+INSTALLED_PACKAGES=$(dpkg-query -W --showformat '${Package}\n');
+INSTALLED_PACKAGES_COUNT=$(echo "$INSTALLED_PACKAGES" | wc --lines);
+
+# Process each of the installed packages
+PROCESS_PACKAGES_COUNT=0;
+for package in $INSTALLED_PACKAGES; do
+	# Print the progress bar
+	printf "[";
+	BARS=$((TOTAL_PROGRESS_BARS * PROCESS_PACKAGES_COUNT / INSTALLED_PACKAGES_COUNT));
+	for _ in $(seq 1 $BARS); do
+			printf "=";
+	done;
+
+	for _ in $(seq 1 $((TOTAL_PROGRESS_BARS - BARS))); do
+		printf " ";
+	done;
+	printf '](%3d%%)\r' $((100 * PROCESS_PACKAGES_COUNT / INSTALLED_PACKAGES_COUNT));
+
+	# If the package has no dependents, report it to the standard output.
+	PACKAGE_DEPENDENTS="$(apt-cache rdepends --installed "$package" | tail -n +3)";
+	if test -z "$PACKAGE_DEPENDENTS"; then
+		printf "%-${PROGRESS_BAR_WIDTH}s\n" "$package";
+	fi;
+
+	# Count how many packages have been processed
+	PROCESS_PACKAGES_COUNT=$((PROCESS_PACKAGES_COUNT + 1));
+done;
+
+printf "%${PROGRESS_BAR_WIDTH}s\r" '';
