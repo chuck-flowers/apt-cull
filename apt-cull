@@ -21,17 +21,19 @@ INSTALLED_PACKAGES_COUNT=$(echo "$INSTALLED_PACKAGES" | wc --lines);
 # Process each of the installed packages
 PROCESS_PACKAGES_COUNT=0;
 for package in $INSTALLED_PACKAGES; do
-	# Print the progress bar
-	printf "[";
-	BARS=$((TOTAL_PROGRESS_BARS * PROCESS_PACKAGES_COUNT / INSTALLED_PACKAGES_COUNT));
-	for _ in $(seq 1 $BARS); do
-			printf "=";
-	done;
+	# Print the progress bar if a terminal is attached.
+	if test -t 1; then
+		printf "[";
+		BARS=$((TOTAL_PROGRESS_BARS * PROCESS_PACKAGES_COUNT / INSTALLED_PACKAGES_COUNT));
+		for _ in $(seq 1 $BARS); do
+				printf "=";
+		done;
 
-	for _ in $(seq 1 $((TOTAL_PROGRESS_BARS - BARS))); do
-		printf " ";
-	done;
-	printf '](%3d%%)\r' $((100 * PROCESS_PACKAGES_COUNT / INSTALLED_PACKAGES_COUNT));
+		for _ in $(seq 1 $((TOTAL_PROGRESS_BARS - BARS))); do
+			printf " ";
+		done;
+		printf '](%3d%%)\r' $((100 * PROCESS_PACKAGES_COUNT / INSTALLED_PACKAGES_COUNT));
+	fi;
 
 	# If the package has no dependents, report it to the standard output.
 	PACKAGE_DEPENDENTS="$(apt-cache rdepends --installed "$package" | tail -n +3)";
