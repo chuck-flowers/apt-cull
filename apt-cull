@@ -15,7 +15,7 @@ TOTAL_PROGRESS_BARS=50;
 PROGRESS_BAR_WIDTH=$((TOTAL_PROGRESS_BARS + 8));
 
 # Determine the list and count of installed packages
-INSTALLED_PACKAGES=$(dpkg-query -W --showformat '${Package}\n');
+INSTALLED_PACKAGES=$(dpkg-query -W -f '${Status}\t${Package}\n' | grep -E ^install | cut -f 2);
 INSTALLED_PACKAGES_COUNT=$(echo "$INSTALLED_PACKAGES" | wc --lines);
 
 # Process each of the installed packages
