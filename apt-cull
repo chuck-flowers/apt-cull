@@ -1,13 +1,13 @@
 #!/bin/env sh
 
 if test -z "$(which dpkg-query)"; then
-		echo "aptimal requires that dpkg-query is installed";
-		exit 1;
+	echo "aptimal requires that dpkg-query is installed";
+	exit 1;
 fi
 
 if test -z "$(which apt-cache)"; then
-		echo "aptimal requires that apt-cache is installed";
-		exit 1;
+	echo "aptimal requires that apt-cache is installed";
+	exit 1;
 fi
 
 # Constants
@@ -26,7 +26,7 @@ for package in $INSTALLED_PACKAGES; do
 		printf "[";
 		BARS=$((TOTAL_PROGRESS_BARS * PROCESS_PACKAGES_COUNT / INSTALLED_PACKAGES_COUNT));
 		for _ in $(seq 1 $BARS); do
-				printf "=";
+			printf "=";
 		done;
 
 		for _ in $(seq 1 $((TOTAL_PROGRESS_BARS - BARS))); do
