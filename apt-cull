@@ -1,6 +1,6 @@
 #!/bin/env sh
 
-if test -z "$(which apt-mark)"; then
+if test -z "$(which dpkg-query)"; then
 	echo "aptimal requires that dpkg-query is installed";
 	exit 1;
 fi
